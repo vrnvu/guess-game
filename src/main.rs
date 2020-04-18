@@ -25,11 +25,11 @@ fn main() {
 
         match comparison {
             Ordering::Less => {
-                game_state.from_range = update_from_range(game_state.from_range, guess);
+                update_from_range(&mut game_state, guess);
                 println!("Too small!");
             }
             Ordering::Greater => {
-                game_state.to_range = update_to_range(game_state.to_range, guess);
+                update_to_range(&mut game_state, guess);
                 println!("Too big!");
             }
             Ordering::Equal => {
@@ -42,19 +42,19 @@ fn main() {
     println!("Found {} in {} tries", game_state.secret, game_state.tries);
 }
 
-fn update_from_range(from_range: u32, guess: u32) -> u32 {
-    if guess > from_range {
+fn update_from_range(game_state: &mut GameState, guess: u32) {
+    game_state.from_range = if guess > game_state.from_range {
         guess + 1
     } else {
-        from_range
+        game_state.from_range
     }
 }
 
-fn update_to_range(to_range: u32, guess: u32) -> u32 {
-    if guess < to_range {
+fn update_to_range(game_state: &mut GameState, guess: u32) {
+    game_state.to_range = if guess < game_state.to_range {
         guess - 1
     } else {
-        to_range
+        game_state.to_range
     }
 }
 
