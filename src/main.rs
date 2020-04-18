@@ -24,7 +24,7 @@ fn main() {
         match comparison {
             Ordering::Less => update_less(&mut game_state, guess),
             Ordering::Greater => update_greater(&mut game_state, guess),
-            Ordering::Equal => update_equal(&mut game_state, guess),
+            Ordering::Equal => update_equal(&mut game_state),
         }
     }
 
@@ -43,7 +43,7 @@ fn update_greater(game_state: &mut GameState, guess: u32) {
     println!("Too big!");
 }
 
-fn update_equal(game_state: &mut GameState, guess: u32) {
+fn update_equal(game_state: &mut GameState) {
     game_state.tries += 1;
     println!("Found it!");
     game_state.playing = false;
