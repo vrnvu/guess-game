@@ -19,27 +19,34 @@ fn main() {
     };
 
     while game_state.playing {
-        game_state.tries += 1;
         let guess = guess_number(game_state.from_range, game_state.to_range);
         let comparison = guess.cmp(&game_state.secret);
-
         match comparison {
-            Ordering::Less => {
-                update_from_range(&mut game_state, guess);
-                println!("Too small!");
-            }
-            Ordering::Greater => {
-                update_to_range(&mut game_state, guess);
-                println!("Too big!");
-            }
-            Ordering::Equal => {
-                println!("Found it!");
-                game_state.playing = false;
-            }
+            Ordering::Less => update_less(&mut game_state, guess),
+            Ordering::Greater => update_greater(&mut game_state, guess),
+            Ordering::Equal => update_equal(&mut game_state, guess),
         }
     }
 
     println!("Found {} in {} tries", game_state.secret, game_state.tries);
+}
+
+fn update_less(game_state: &mut GameState, guess: u32) {
+    game_state.tries += 1;
+    update_from_range(game_state, guess);
+    println!("Too small!");
+}
+
+fn update_greater(game_state: &mut GameState, guess: u32) {
+    game_state.tries += 1;
+    update_to_range(game_state, guess);
+    println!("Too big!");
+}
+
+fn update_equal(game_state: &mut GameState, guess: u32) {
+    game_state.tries += 1;
+    println!("Found it!");
+    game_state.playing = false;
 }
 
 fn update_from_range(game_state: &mut GameState, guess: u32) {
