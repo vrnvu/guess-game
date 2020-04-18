@@ -1,7 +1,7 @@
 use rand::Rng;
 use std::cmp::Ordering;
 
-pub struct GameState {
+pub struct State {
   secret: u32,
   from_range: u32,
   to_range: u32,
@@ -9,17 +9,7 @@ pub struct GameState {
   playing: bool,
 }
 
-impl GameState {
-  pub fn new(from: u32, to: u32) -> GameState {
-    GameState {
-      secret: gen_secret(from, to + 1),
-      from_range: from,
-      to_range: to,
-      tries: 0,
-      playing: true,
-    }
-  }
-
+impl State {
   pub fn make_guess(&mut self, guess: u32) {
     self.increment_tries();
     let comparison = guess.cmp(&self.secret);
@@ -65,20 +55,30 @@ impl GameState {
   }
 }
 
-pub fn finish(game_state: GameState) {
-  println!("Found {} in {} tries", game_state.secret, game_state.tries);
+pub fn new(from: u32, to: u32) -> State {
+  State {
+    secret: gen_secret(from, to + 1),
+    from_range: from,
+    to_range: to,
+    tries: 0,
+    playing: true,
+  }
 }
 
-pub fn get_from(game_state: &GameState) -> u32 {
-  game_state.from_range
+pub fn finish(state: State) {
+  println!("Found {} in {} tries", state.secret, state.tries);
 }
 
-pub fn get_to(game_state: &GameState) -> u32 {
-  game_state.to_range
+pub fn get_from(state: &State) -> u32 {
+  state.from_range
 }
 
-pub fn is_playing(game_state: &GameState) -> bool {
-  game_state.playing
+pub fn get_to(state: &State) -> u32 {
+  state.to_range
+}
+
+pub fn is_playing(state: &State) -> bool {
+  state.playing
 }
 
 fn gen_secret(from: u32, to: u32) -> u32 {
