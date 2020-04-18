@@ -10,8 +10,42 @@ struct GameState {
 }
 
 impl GameState {
+    fn new(from: u32, to: u32) -> GameState {
+        GameState {
+            secret: gen_secret(from, to + 1),
+            from_range: from,
+            to_range: to,
+            tries: 0,
+            playing: true,
+        }
+    }
+
+    fn make_guess(&mut self, guess: u32) {
+        self.increment_tries();
+        let comparison = guess.cmp(&self.secret);
+        match comparison {
+            Ordering::Less => self.update_less(guess),
+            Ordering::Greater => self.update_greater(guess),
+            Ordering::Equal => self.update_equal(),
+        }
+    }
+
     fn increment_tries(&mut self) {
         self.tries += 1
+    }
+
+    fn update_less(&mut self, guess: u32) {
+        self.update_from_range(guess);
+        println!("Too small!");
+    }
+    fn update_greater(&mut self, guess: u32) {
+        self.update_to_range(guess);
+        println!("Too big!");
+    }
+
+    fn update_equal(&mut self) {
+        println!("Found it!");
+        self.playing = false;
     }
 
     fn update_from_range(&mut self, guess: u32) {
@@ -32,43 +66,14 @@ impl GameState {
 }
 
 fn main() {
-    let mut game_state = GameState {
-        secret: gen_secret(1, 101),
-        from_range: 1,
-        to_range: 100,
-        tries: 0,
-        playing: true,
-    };
+    let mut game_state = GameState::new(1, 100);
 
     while game_state.playing {
         let guess = guess_number(game_state.from_range, game_state.to_range);
-        let comparison = guess.cmp(&game_state.secret);
-        match comparison {
-            Ordering::Less => update_less(&mut game_state, guess),
-            Ordering::Greater => update_greater(&mut game_state, guess),
-            Ordering::Equal => update_equal(&mut game_state),
-        }
+        game_state.make_guess(guess);
     }
 
     println!("Found {} in {} tries", game_state.secret, game_state.tries);
-}
-
-fn update_less(game_state: &mut GameState, guess: u32) {
-    game_state.increment_tries();
-    game_state.update_from_range(guess);
-    println!("Too small!");
-}
-
-fn update_greater(game_state: &mut GameState, guess: u32) {
-    game_state.increment_tries();
-    game_state.update_to_range(guess);
-    println!("Too big!");
-}
-
-fn update_equal(game_state: &mut GameState) {
-    game_state.increment_tries();
-    println!("Found it!");
-    game_state.playing = false;
 }
 
 fn gen_secret(from: u32, to: u32) -> u32 {
