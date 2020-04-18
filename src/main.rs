@@ -9,6 +9,28 @@ struct GameState {
     playing: bool,
 }
 
+impl GameState {
+    fn increment_tries(&mut self) {
+        self.tries += 1
+    }
+
+    fn update_from_range(&mut self, guess: u32) {
+        self.from_range = if guess > self.from_range {
+            guess + 1
+        } else {
+            self.from_range
+        }
+    }
+
+    fn update_to_range(&mut self, guess: u32) {
+        self.to_range = if guess < self.to_range {
+            guess - 1
+        } else {
+            self.to_range
+        }
+    }
+}
+
 fn main() {
     let mut game_state = GameState {
         secret: gen_secret(1, 101),
@@ -32,37 +54,21 @@ fn main() {
 }
 
 fn update_less(game_state: &mut GameState, guess: u32) {
-    game_state.tries += 1;
-    update_from_range(game_state, guess);
+    game_state.increment_tries();
+    game_state.update_from_range(guess);
     println!("Too small!");
 }
 
 fn update_greater(game_state: &mut GameState, guess: u32) {
-    game_state.tries += 1;
-    update_to_range(game_state, guess);
+    game_state.increment_tries();
+    game_state.update_to_range(guess);
     println!("Too big!");
 }
 
 fn update_equal(game_state: &mut GameState) {
-    game_state.tries += 1;
+    game_state.increment_tries();
     println!("Found it!");
     game_state.playing = false;
-}
-
-fn update_from_range(game_state: &mut GameState, guess: u32) {
-    game_state.from_range = if guess > game_state.from_range {
-        guess + 1
-    } else {
-        game_state.from_range
-    }
-}
-
-fn update_to_range(game_state: &mut GameState, guess: u32) {
-    game_state.to_range = if guess < game_state.to_range {
-        guess - 1
-    } else {
-        game_state.to_range
-    }
 }
 
 fn gen_secret(from: u32, to: u32) -> u32 {
