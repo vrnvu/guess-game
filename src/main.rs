@@ -2,21 +2,23 @@ use rand::Rng;
 use std::cmp::Ordering;
 
 fn main() {
+    let secret = gen_secret(1, 101);
+
     let mut from_range = 1;
     let mut to_range = 100;
-    let secret = gen_secret(1, 101);
     let mut tries = 0;
+
     loop {
         tries += 1;
         let guess = guess_number(from_range, to_range);
         let comparison = guess.cmp(&secret);
         match comparison {
             Ordering::Less => {
-                from_range = guess + 1;
+                from_range = update_from_range(from_range, guess);
                 println!("Too small!");
             }
             Ordering::Greater => {
-                to_range = guess - 1;
+                to_range = update_to_range(to_range, guess);
                 println!("Too big!");
             }
             Ordering::Equal => {
@@ -26,6 +28,22 @@ fn main() {
         }
     }
     println!("Found {} in {} tries", secret, tries);
+}
+
+fn update_from_range(from_range: u32, guess: u32) -> u32 {
+    if guess > from_range {
+        guess + 1
+    } else {
+        from_range
+    }
+}
+
+fn update_to_range(to_range: u32, guess: u32) -> u32 {
+    if guess < to_range {
+        guess - 1
+    } else {
+        to_range
+    }
 }
 
 fn gen_secret(from: u32, to: u32) -> u32 {
